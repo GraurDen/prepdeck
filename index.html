@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:;">
+  <meta name="theme-color" content="#5C6BC0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>PrepDeck</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Home Screen -->
+  <div id="home-screen" class="screen active">
+    <div class="app-bar">
+      <img src="icon-192.png" alt="PrepDeck" class="app-bar-icon">
+      <h1>PrepDeck</h1>
+      <span class="spacer"></span>
+      <span class="study-days" id="study-days">
+        <span class="study-days-count" id="study-days-count">0</span> дн.
+      </span>
+      <button class="icon-btn" id="menu-btn" title="Меню">&#9776;</button>
+    </div>
+    <div class="content">
+      <div class="section-header">Карточки</div>
+      <div class="stats-card">
+        <div class="stat">
+          <span class="stat-value stat-total" id="total-count">0</span>
+          <span class="stat-label">Всего</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value stat-reviewed" id="learned-count">0</span>
+          <span class="stat-label">Изучено</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value stat-due" id="remaining-count">0</span>
+          <span class="stat-label">Изучить</span>
+        </div>
+      </div>
+      <div class="section-header">Прогресс изучения</div>
+      <div class="progress-overview">
+        <div class="progress-bar">
+          <div class="progress-fill" id="overall-progress"></div>
+        </div>
+        <span class="progress-text" id="progress-text">0%</span>
+      </div>
+
+      <div class="section-header" id="category-header">Темы</div>
+      <div class="category-chips" id="category-chips"></div>
+
+      <button class="btn btn-primary btn-large" id="start-btn">
+        &#9654; Начать
+      </button>
+      <input type="file" id="file-input" accept=".json" hidden>
+    </div>
+  </div>
+
+  <!-- Card Screen -->
+  <div id="card-screen" class="screen">
+    <div class="app-bar">
+      <button class="icon-btn" id="back-btn">&#8592;</button>
+      <span id="card-counter">1 / 10</span>
+      <span class="spacer"></span>
+      <span class="session-stats">
+        <span class="session-stat ss-success" id="ss-knew">0</span>
+        <span class="session-stat ss-warning" id="ss-unsure">0</span>
+        <span class="session-stat ss-danger" id="ss-forgot">0</span>
+      </span>
+    </div>
+    <div class="progress-bar session-progress">
+      <div class="progress-fill" id="session-progress"></div>
+    </div>
+    <div class="card-container">
+      <div class="card" id="flashcard">
+        <div class="card-inner">
+          <div class="card-front">
+            <div class="card-label">Вопрос</div>
+            <div class="card-content" id="question-text"></div>
+            <div class="card-hint">Нажмите, чтобы увидеть ответ</div>
+          </div>
+          <div class="card-back">
+            <div class="card-label">Ответ</div>
+            <div class="card-content" id="answer-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions" id="card-actions">
+      <button class="btn btn-danger" id="forgot-btn">
+        &#10007; Не знал
+      </button>
+      <button class="btn btn-unsure" id="unsure-btn">
+        &#8764; Сомневался
+      </button>
+      <button class="btn btn-success" id="knew-btn">
+        &#10003; Знал
+      </button>
+    </div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="results-screen" class="screen">
+    <div class="app-bar">
+      <h1>Результаты</h1>
+    </div>
+    <div class="content results-content">
+      <div class="result-icon">&#127942;</div>
+      <h2 id="results-title">Сессия завершена!</h2>
+      <div class="results-stats">
+        <div class="result-stat correct">
+          <span class="result-stat-value" id="results-correct">0</span>
+          <span class="result-stat-label">Знал</span>
+        </div>
+        <div class="result-stat unsure">
+          <span class="result-stat-value" id="results-unsure">0</span>
+          <span class="result-stat-label">Сомневался</span>
+        </div>
+        <div class="result-stat repeat">
+          <span class="result-stat-value" id="results-repeat">0</span>
+          <span class="result-stat-label">Не знал</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-large" id="continue-btn">
+        &#9654; Продолжить
+      </button>
+      <button class="btn btn-outlined" id="home-btn">
+        &#8962; На главную
+      </button>
+    </div>
+  </div>
+
+  <!-- Side Drawer -->
+  <div class="drawer-overlay" id="drawer-overlay" hidden></div>
+  <nav class="drawer" id="drawer">
+    <div class="drawer-header">
+      <img src="icon-192.png" alt="PrepDeck" class="drawer-icon">
+      <span class="drawer-title">PrepDeck</span>
+    </div>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item" id="load-btn">
+      &#128194; Загрузить карточки
+    </button>
+    <button class="drawer-item" id="export-btn">
+      &#128190; Экспорт данных
+    </button>
+    <div class="drawer-divider"></div>
+    <button class="drawer-item drawer-item-danger" id="reset-btn">
+      &#8635; Сбросить прогресс
+    </button>
+  </nav>
+
+  <!-- Confirmation dialog -->
+  <div class="overlay" id="overlay" hidden>
+    <div class="dialog">
+      <p id="dialog-text">Вы уверены?</p>
+      <div class="dialog-actions" id="dialog-actions"></div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

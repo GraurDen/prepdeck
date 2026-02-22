@@ -1,0 +1,22 @@
+{
+  "name": "PrepDeck — Interview Flashcards",
+  "short_name": "PrepDeck",
+  "description": "Flashcard app for web developer interview preparation",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#F5F5F7",
+  "theme_color": "#5C6BC0",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

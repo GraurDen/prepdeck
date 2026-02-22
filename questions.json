@@ -1,0 +1,122 @@
+[
+  {
+    "id": 1,
+    "question": "What is semantic HTML?",
+    "answer": "Using HTML elements that convey meaning about their content (header, nav, main, section, article, footer) instead of generic div/span. Improves accessibility, SEO, and code readability.",
+    "category": "HTML"
+  },
+  {
+    "id": 2,
+    "question": "What is the difference between <div> and <span>?",
+    "answer": "div is a block-level element (takes full width, starts on new line). span is an inline element (only takes as much width as needed, flows within text).",
+    "category": "HTML"
+  },
+  {
+    "id": 3,
+    "question": "What is DOCTYPE and why is it needed?",
+    "answer": "A declaration at the top of an HTML document that tells the browser which version of HTML to use. <!DOCTYPE html> triggers standards mode and ensures consistent rendering.",
+    "category": "HTML"
+  },
+  {
+    "id": 4,
+    "question": "What are data-* attributes in HTML?",
+    "answer": "Custom attributes for storing extra data on HTML elements. Accessed via element.dataset in JavaScript. Example: <div data-user-id=\"42\"> → element.dataset.userId === '42'.",
+    "category": "HTML"
+  },
+  {
+    "id": 5,
+    "question": "What is the CSS Box Model?",
+    "answer": "Every element is a box consisting of: content → padding → border → margin (from inside out). box-sizing: border-box makes width/height include padding and border.",
+    "category": "CSS"
+  },
+  {
+    "id": 6,
+    "question": "What is the difference between Flexbox and Grid?",
+    "answer": "Flexbox is one-dimensional (row OR column). Grid is two-dimensional (rows AND columns simultaneously). Use Flexbox for component layouts, Grid for page-level layouts.",
+    "category": "CSS"
+  },
+  {
+    "id": 7,
+    "question": "What is CSS specificity?",
+    "answer": "Algorithm that determines which CSS rule wins when multiple rules target the same element. Priority: inline styles (1000) > #id (100) > .class (10) > element (1). !important overrides all.",
+    "category": "CSS"
+  },
+  {
+    "id": 8,
+    "question": "What is the difference between position: relative and position: absolute?",
+    "answer": "relative: element is offset from its normal position, still occupies original space. absolute: element is removed from flow and positioned relative to the nearest positioned ancestor.",
+    "category": "CSS"
+  },
+  {
+    "id": 9,
+    "question": "What is BEM methodology?",
+    "answer": "Block Element Modifier — a CSS naming convention. Block: .card, Element: .card__title, Modifier: .card--highlighted. Helps organize styles and avoid naming conflicts.",
+    "category": "CSS"
+  },
+  {
+    "id": 10,
+    "question": "What is a closure in JavaScript?",
+    "answer": "A function that retains access to variables from its outer (lexical) scope even after the outer function has returned. Used for data privacy, callbacks, and factory functions.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 11,
+    "question": "What is the difference between let, const, and var?",
+    "answer": "var: function-scoped, hoisted, can be redeclared. let: block-scoped, not hoisted (TDZ), cannot be redeclared. const: like let, but cannot be reassigned (object properties can still change).",
+    "category": "JavaScript"
+  },
+  {
+    "id": 12,
+    "question": "What is a Promise in JavaScript?",
+    "answer": "An object representing the eventual completion or failure of an async operation. States: pending → fulfilled or rejected. Chained with .then()/.catch() or used with async/await.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 13,
+    "question": "What is the Event Loop?",
+    "answer": "Mechanism that handles async code in JS. Call stack executes sync code → async callbacks go to Web APIs → task/microtask queues → event loop pushes them to call stack when it's empty.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 14,
+    "question": "What is the difference between == and ===?",
+    "answer": "== (loose equality): compares values with type coercion (\"5\" == 5 is true). === (strict equality): compares value AND type without coercion (\"5\" === 5 is false). Always prefer ===.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 15,
+    "question": "What is hoisting in JavaScript?",
+    "answer": "Declarations (var, function) are moved to the top of their scope during compilation. var is hoisted as undefined. Function declarations are fully hoisted. let/const have a Temporal Dead Zone.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 16,
+    "question": "What does 'this' refer to in JavaScript?",
+    "answer": "Depends on how the function is called: method call → the object; standalone → window/undefined; arrow function → inherits from enclosing scope; new → the new instance; bind/call/apply → explicitly set.",
+    "category": "JavaScript"
+  },
+  {
+    "id": 17,
+    "question": "What is a REST API?",
+    "answer": "Architectural style for APIs using HTTP methods: GET (read), POST (create), PUT (update), DELETE (remove). Stateless, resource-based URLs (/users/123), returns JSON. Standard for web services.",
+    "category": "Web"
+  },
+  {
+    "id": 18,
+    "question": "What is CORS?",
+    "answer": "Cross-Origin Resource Sharing — a browser security mechanism that blocks requests to a different domain unless the server sends Access-Control-Allow-Origin headers. Protects users from malicious sites.",
+    "category": "Web"
+  },
+  {
+    "id": 19,
+    "question": "What is the difference between localStorage and sessionStorage?",
+    "answer": "Both store key-value pairs in the browser. localStorage persists until manually cleared (survives tab/browser close). sessionStorage is cleared when the tab is closed. Both limited to ~5-10 MB.",
+    "category": "Web"
+  },
+  {
+    "id": 20,
+    "question": "What is the difference between cookies and localStorage?",
+    "answer": "Cookies: sent with every HTTP request, 4KB limit, can set expiration, accessible by server. localStorage: client-side only, ~5-10MB, no expiration, not sent to server. Use cookies for auth, localStorage for app data.",
+    "category": "Web"
+  }
+]
