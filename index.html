@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; img-src 'self' data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:;">
   <meta name="theme-color" content="#5C6BC0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -50,6 +50,19 @@
 
       <div class="section-header" id="category-header">Темы</div>
       <div class="category-chips" id="category-chips"></div>
+
+      <div class="all-done" id="all-done-info" hidden>
+        <div class="all-done-icon">&#127881;</div>
+        <div class="all-done-title">Всё изучено на сегодня!</div>
+        <div class="all-done-text">
+          SM-2 запланирует повторение карточек на ближайшие дни.
+          Возвращайся завтра!
+        </div>
+        <div class="all-done-hints">
+          <span>&#9776; Загрузить ещё карточки — через меню</span>
+          <span>&#9776; Сбросить прогресс — через меню</span>
+        </div>
+      </div>
 
       <button class="btn btn-primary btn-large" id="start-btn">
         &#9654; Начать
@@ -145,6 +158,9 @@
     </button>
     <button class="drawer-item" id="export-btn">
       &#128190; Экспорт данных
+    </button>
+    <button class="drawer-item" id="theme-btn">
+      &#127769; Тёмная тема
     </button>
     <div class="drawer-divider"></div>
     <button class="drawer-item drawer-item-danger" id="reset-btn">

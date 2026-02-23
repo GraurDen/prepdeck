@@ -41,9 +41,49 @@
   --card-bg: #FFFFFF;
   --divider: #ECEFF1;
 
+  /* Components */
+  --code-bg: rgba(0, 0, 0, 0.06);
+  --chip-active-bg: #E8EAF6;
+  --disabled-bg: #B0BEC5;
+
   /* Sizing */
   --radius: 12px;
   --radius-lg: 16px;
+}
+
+/* ---- Dark Theme ---- */
+
+[data-theme="dark"] {
+  --primary: #4A5899;
+  --primary-dark: #3D4A7A;
+  --primary-light: #5C6BC0;
+  --on-primary: #E0E0E0;
+
+  --success: #4DB6AC;
+  --success-dark: #26A69A;
+  --success-bg: #1a2e2b;
+  --warning: #FFB74D;
+  --warning-dark: #FFA726;
+  --warning-bg: #2e2a1a;
+  --danger: #EF5350;
+  --danger-dark: #E53935;
+  --danger-bg: #2e1a1a;
+
+  --surface: #1E1E1E;
+  --background: #121212;
+  --on-surface: #E0E0E0;
+  --on-surface-dim: #9E9E9E;
+  --card-bg: #252526;
+  --divider: #333333;
+
+  --code-bg: rgba(255, 255, 255, 0.08);
+  --chip-active-bg: #2a2d4a;
+  --disabled-bg: #555555;
+}
+
+[data-theme="dark"] .app-bar,
+[data-theme="dark"] .drawer-header {
+  background: #1E1E1E;
 }
 
 html, body {
@@ -311,7 +351,7 @@ body {
 }
 
 .btn-primary:disabled {
-  background: #B0BEC5;
+  background: var(--disabled-bg);
   cursor: not-allowed;
   transform: none;
 }
@@ -343,16 +383,6 @@ body {
 
 .btn-success:active {
   background: var(--success-dark);
-}
-
-.btn-warning {
-  background: var(--warning);
-  color: var(--on-primary);
-  flex: 1;
-}
-
-.btn-warning:active {
-  background: var(--warning-dark);
 }
 
 .btn-danger {
@@ -388,9 +418,9 @@ body {
 
 .card {
   width: 100%;
-  max-width: 420px;
-  height: 55vh;
-  max-height: 460px;
+  max-width: 500px;
+  height: calc(100vh - 56px - 4px - 60px - 32px);
+  height: calc(100dvh - 56px - 4px - 60px - 32px);
   cursor: pointer;
 }
 
@@ -420,8 +450,8 @@ body {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  padding: 24px;
-  overflow-y: auto;
+  padding: 10px;
+  overflow: hidden;
 }
 
 .card-back {
@@ -440,13 +470,57 @@ body {
 
 .card-content {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  min-height: 0;
+  overflow-y: auto;
   font-size: 18px;
   line-height: 1.6;
   text-align: center;
   word-break: break-word;
+  scrollbar-width: thin;
+  scrollbar-color: var(--on-surface-dim) transparent;
+}
+
+.card-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.card-content::-webkit-scrollbar-thumb {
+  background: var(--on-surface-dim);
+  border-radius: 3px;
+}
+
+.card-content::-webkit-scrollbar-button {
+  display: none;
+}
+
+.code-inline {
+  font-family: 'Courier New', monospace;
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+.code-block {
+  width: 100%;
+  text-align: left;
+  font-family: 'Courier New', monospace;
+  background: var(--code-bg);
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 0.85em;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 8px 0;
+}
+
+.code-block code {
+  font-family: inherit;
 }
 
 .card-hint {
@@ -568,14 +642,14 @@ body {
 
 .dialog-actions {
   display: flex;
-  justify-content: flex-end;
+  flex-direction: column;
   gap: 8px;
-  flex-wrap: wrap;
 }
 
 .dialog-actions .btn {
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 12px 16px;
+  font-size: 15px;
+  width: 100%;
 }
 
 /* ---- Category Chips ---- */
@@ -606,7 +680,7 @@ body {
 }
 
 .chip-active {
-  background: #E8EAF6;
+  background: var(--chip-active-bg);
   color: var(--primary-dark);
   border-color: var(--primary-light);
 }
@@ -717,4 +791,45 @@ body {
 
 .empty-state-text {
   font-size: 16px;
+}
+
+/* ---- All Done Info ---- */
+
+.all-done {
+  text-align: center;
+  background: var(--success-bg);
+  border-radius: var(--radius-lg);
+  padding: 24px 20px;
+  border: 1.5px solid rgba(38, 166, 154, 0.2);
+}
+
+.all-done[hidden] {
+  display: none;
+}
+
+.all-done-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+.all-done-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--success-dark);
+  margin-bottom: 8px;
+}
+
+.all-done-text {
+  font-size: 14px;
+  color: var(--on-surface);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.all-done-hints {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--on-surface-dim);
 }

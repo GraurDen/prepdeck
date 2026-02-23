@@ -1,6 +1,6 @@
 // PrepDeck Service Worker — offline caching
 
-const CACHE_NAME = 'prepdeck-v5';
+const CACHE_NAME = 'prepdeck-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -8,6 +8,8 @@ const ASSETS = [
   './app.js',
   './questions.json',
   './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
 ];
 
 // Cache assets on install
@@ -30,9 +32,20 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Cache first, fallback to network
+// Stale-while-revalidate: serve from cache, update in background
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    caches.match(event.request).then((cached) => {
+      const networkFetch = fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => cached);
+      return cached || networkFetch;
+    })
   );
 });

@@ -12,12 +12,18 @@
   const STORAGE_CUSTOM_QUESTIONS = 'prepdeck_custom_questions';
   const STORAGE_CATEGORIES = 'prepdeck_categories';
   const STORAGE_STUDY_DAYS = 'prepdeck_study_days';
+  const STORAGE_THEME = 'prepdeck_theme';
 
   // ---- Validation Limits ----
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
   const MAX_CARDS = 5000;
   const MAX_STRING_LENGTH = 5000;
   const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+  // ---- SM-2 Quality Grades ----
+  const QUALITY_FORGOT = 0;
+  const QUALITY_UNSURE = 3;
+  const QUALITY_KNEW = 5;
 
   // ---- State ----
   let allQuestions = [];
@@ -49,6 +55,7 @@
     loadBtn: $('load-btn'),
     fileInput: $('file-input'),
     exportBtn: $('export-btn'),
+    themeBtn: $('theme-btn'),
     resetBtn: $('reset-btn'),
     categoryChips: $('category-chips'),
     categoryHeader: $('category-header'),
@@ -72,6 +79,7 @@
     dialogText: $('dialog-text'),
     dialogActions: $('dialog-actions'),
     studyDaysCount: $('study-days-count'),
+    allDoneInfo: $('all-done-info'),
     ssKnew: $('ss-knew'),
     ssUnsure: $('ss-unsure'),
     ssForgot: $('ss-forgot'),
@@ -128,11 +136,29 @@
    */
   function validateQuestion(q) {
     if (!q || typeof q !== 'object') return false;
-    if (typeof q.id !== 'number' && typeof q.id !== 'string') return false;
+    if (q.id !== undefined && typeof q.id !== 'number' && typeof q.id !== 'string') return false;
     if (typeof q.question !== 'string' || q.question.length === 0 || q.question.length > MAX_STRING_LENGTH) return false;
     if (typeof q.answer !== 'string' || q.answer.length === 0 || q.answer.length > MAX_STRING_LENGTH) return false;
     if (q.category !== undefined && (typeof q.category !== 'string' || q.category.length > 100)) return false;
     return true;
+  }
+
+  /** Generate a stable ID from question text (DJB2 hash). */
+  function generateCardId(question) {
+    var hash = 5381;
+    for (var i = 0; i < question.length; i++) {
+      hash = ((hash << 5) + hash + question.charCodeAt(i)) & 0xffffffff;
+    }
+    return 'a' + (hash >>> 0).toString(36);
+  }
+
+  /** Assign auto-generated IDs to cards that don't have one. */
+  function assignCardIds(cards) {
+    cards.forEach(function (card) {
+      if (card.id === undefined || card.id === null) {
+        card.id = generateCardId(card.question);
+      }
+    });
   }
 
   /**
@@ -186,6 +212,31 @@
     }
   }
 
+  // ---- Theme ----
+
+  /** Load theme from localStorage or system preference, apply to <html>. */
+  function loadTheme() {
+    var saved = localStorage.getItem(STORAGE_THEME);
+    var theme = saved || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(theme);
+  }
+
+  /** Apply theme and update toggle button label. */
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (domElements.themeBtn) {
+      domElements.themeBtn.textContent = theme === 'dark' ? '\u2600\uFE0F Светлая тема' : '\uD83C\uDF19 Тёмная тема';
+    }
+  }
+
+  /** Toggle between light and dark themes. */
+  function toggleTheme() {
+    var current = document.documentElement.getAttribute('data-theme');
+    var next = current === 'dark' ? 'light' : 'dark';
+    applyTheme(next);
+    safeSetItem(STORAGE_THEME, next);
+  }
+
   // ---- SM-2 Algorithm ----
 
   /** Return default SM-2 data for a new/unseen card (due today). */
@@ -212,7 +263,7 @@
   function calculateSM2(cardData, quality) {
     let { easeFactor, interval, repetitions } = cardData;
 
-    if (quality >= 3) {
+    if (quality >= QUALITY_UNSURE) {
       if (repetitions === 0) {
         interval = 1;
       } else if (repetitions === 1) {
@@ -226,7 +277,8 @@
       interval = 1;
     }
 
-    easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+    // SM-2 ease factor formula: EF' = EF + (0.1 - (5-q) * (0.08 + (5-q) * 0.02))
+    easeFactor = easeFactor + (0.1 - (QUALITY_KNEW - quality) * (0.08 + (QUALITY_KNEW - quality) * 0.02));
     if (easeFactor < 1.3) easeFactor = 1.3;
 
     const today = new Date();
@@ -244,6 +296,7 @@
     if (custom) {
       try {
         allQuestions = JSON.parse(custom);
+        assignCardIds(allQuestions);
         return;
       } catch (e) {
         console.warn('Failed to parse custom questions, loading defaults');
@@ -252,7 +305,9 @@
 
     try {
       const response = await fetch('questions.json');
-      allQuestions = await response.json();
+      const data = await response.json();
+      allQuestions = Array.isArray(data) ? data.filter(validateQuestion) : [];
+      assignCardIds(allQuestions);
     } catch (e) {
       console.warn('Failed to load questions.json, using empty set');
       allQuestions = [];
@@ -416,10 +471,14 @@
     domElements.progressText.textContent = percent + '%';
 
     domElements.startBtn.disabled = total === 0;
-    if (dueCount === 0 && total > 0) {
+    var allDone = dueCount === 0 && total > 0;
+    if (allDone) {
       domElements.startBtn.textContent = '🔄 Повторить всё (' + total + ')';
     } else {
       domElements.startBtn.textContent = '▶ Начать (' + dueCount + ')';
+    }
+    if (domElements.allDoneInfo) {
+      domElements.allDoneInfo.hidden = !allDone;
     }
   }
 
@@ -457,6 +516,50 @@
     showCard();
   }
 
+  /**
+   * Render text with markdown-style code formatting into a container.
+   * Uses DOM methods (no innerHTML) to preserve XSS safety.
+   * Supports ```code blocks``` and `inline code`.
+   */
+  function renderFormattedText(container, text) {
+    container.replaceChildren();
+    // Split by ``` for code blocks (odd segments = code)
+    var blockParts = text.split('```');
+    for (var b = 0; b < blockParts.length; b++) {
+      if (b % 2 === 1) {
+        // Code block — strip optional language hint on first line
+        var code = blockParts[b];
+        var newline = code.indexOf('\n');
+        if (newline !== -1 && newline < 20 && /^\w*$/.test(code.substring(0, newline))) {
+          code = code.substring(newline + 1);
+        }
+        var pre = document.createElement('pre');
+        pre.className = 'code-block';
+        var codeEl = document.createElement('code');
+        codeEl.textContent = code;
+        pre.appendChild(codeEl);
+        container.appendChild(pre);
+      } else {
+        // Plain text — split by ` for inline code
+        var inlineParts = blockParts[b].split('`');
+        for (var i = 0; i < inlineParts.length; i++) {
+          if (i % 2 === 1) {
+            var inlineCode = document.createElement('code');
+            inlineCode.className = 'code-inline';
+            inlineCode.textContent = inlineParts[i];
+            container.appendChild(inlineCode);
+          } else if (inlineParts[i]) {
+            var lines = inlineParts[i].split('\n');
+            for (var l = 0; l < lines.length; l++) {
+              if (l > 0) container.appendChild(document.createElement('br'));
+              if (lines[l]) container.appendChild(document.createTextNode(lines[l]));
+            }
+          }
+        }
+      }
+    }
+  }
+
   /** Display the current card (or show results if deck is finished). */
   function showCard() {
     if (currentIndex >= sessionDeck.length) {
@@ -465,8 +568,8 @@
     }
 
     const card = sessionDeck[currentIndex];
-    domElements.questionText.textContent = card.question;
-    domElements.answerText.textContent = card.answer;
+    renderFormattedText(domElements.questionText, card.question);
+    renderFormattedText(domElements.answerText, card.answer);
 
     domElements.flashcard.classList.remove('flipped');
     domElements.cardActions.classList.remove('visible');
@@ -502,8 +605,8 @@
     saveSM2();
     trackStudyDay();
 
-    if (quality >= 3) {
-      if (quality === 5) sessionStats.knew++;
+    if (quality >= QUALITY_UNSURE) {
+      if (quality === QUALITY_KNEW) sessionStats.knew++;
       else sessionStats.unsure++;
       currentIndex++;
     } else {
@@ -515,6 +618,8 @@
         const safeInsert = Math.min(insertAt, sessionDeck.length);
         sessionDeck.splice(safeInsert, 0, card);
       } else {
+        // Last card forgotten — re-append for another attempt
+        sessionDeck.push(card);
         currentIndex++;
       }
     }
@@ -524,11 +629,11 @@
   }
 
   /** Mark current card as "knew" (quality 5). */
-  function markKnew() { processAnswer(5); }
+  function markKnew() { processAnswer(QUALITY_KNEW); }
   /** Mark current card as "unsure" (quality 3). */
-  function markUnsure() { processAnswer(3); }
+  function markUnsure() { processAnswer(QUALITY_UNSURE); }
   /** Mark current card as "forgot" (quality 0). */
-  function markForgot() { processAnswer(0); }
+  function markForgot() { processAnswer(QUALITY_FORGOT); }
 
   // ---- Results ----
 
@@ -643,7 +748,7 @@
     // Validate each question
     const invalidIndex = data.findIndex(function (q) { return !validateQuestion(q); });
     if (invalidIndex !== -1) {
-      alert('Ошибка в карточке #' + (invalidIndex + 1) + ': каждая карточка должна иметь поля "id" (число/строка), "question" (строка) и "answer" (строка).');
+      alert('Ошибка в карточке #' + (invalidIndex + 1) + ': каждая карточка должна иметь поля "question" (строка) и "answer" (строка).');
       return;
     }
 
@@ -651,18 +756,20 @@
     const action = await showDialogEx(
       'Как загрузить ' + data.length + ' карточек?',
       [
-        { label: 'Отмена', value: 'cancel', className: 'btn-text' },
-        { label: 'Добавить', value: 'add', className: 'btn-outlined' },
         { label: 'Заменить', value: 'replace', className: 'btn-primary' },
+        { label: 'Добавить к существующим', value: 'add', className: 'btn-outlined' },
+        { label: 'Отмена', value: 'cancel', className: 'btn-text' },
       ]
     );
 
     if (action === 'replace') {
+      assignCardIds(data);
       allQuestions = data;
       safeSetItem(STORAGE_CUSTOM_QUESTIONS, JSON.stringify(data));
       sm2Data = Object.create(null);
       saveSM2();
     } else if (action === 'add') {
+      assignCardIds(data);
       const existingIds = new Set(allQuestions.map(function (q) { return q.id; }));
       const newCards = data.filter(function (q) { return !existingIds.has(q.id); });
       if (newCards.length === 0) {
@@ -743,6 +850,7 @@
 
     if (!confirmed) return;
 
+    assignCardIds(validQuestions);
     allQuestions = validQuestions;
     safeSetItem(STORAGE_CUSTOM_QUESTIONS, JSON.stringify(allQuestions));
 
@@ -807,6 +915,10 @@
       exportBackup();
     });
 
+    domElements.themeBtn.addEventListener('click', function () {
+      toggleTheme();
+    });
+
     domElements.resetBtn.addEventListener('click', async function () {
       closeDrawer();
       var confirmed = await showDialog(
@@ -824,7 +936,18 @@
     });
 
     // Card screen
-    domElements.flashcard.addEventListener('click', flipCard);
+    (function () {
+      var startX = 0, startY = 0;
+      domElements.flashcard.addEventListener('pointerdown', function (e) {
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+      domElements.flashcard.addEventListener('pointerup', function (e) {
+        var dx = Math.abs(e.clientX - startX);
+        var dy = Math.abs(e.clientY - startY);
+        if (dx < 10 && dy < 10) flipCard();
+      });
+    })();
     domElements.forgotBtn.addEventListener('click', markForgot);
     domElements.unsureBtn.addEventListener('click', markUnsure);
     domElements.knewBtn.addEventListener('click', markKnew);
@@ -846,6 +969,7 @@
 
   /** Initialize app: load data, render UI, bind events. */
   async function init() {
+    loadTheme();
     await loadQuestions();
     extractCategories();
     loadCategoryFilter();

@@ -1,122 +1,87 @@
 [
   {
-    "id": 1,
-    "question": "What is semantic HTML?",
-    "answer": "Using HTML elements that convey meaning about their content (header, nav, main, section, article, footer) instead of generic div/span. Improves accessibility, SEO, and code readability.",
-    "category": "HTML"
+    "question": "Зачем весь app.js обёрнут в `(function() { 'use strict'; ... })()`?",
+    "answer": "Это паттерн IIFE (Immediately Invoked Function Expression). Создаёт приватную область видимости — все переменные (allQuestions, sm2Data, sessionDeck и др.) не попадают в глобальный объект `window`. Без этого любой скрипт на странице мог бы читать и менять состояние приложения.\n\n`'use strict'` включает строгий режим, который ловит типичные ошибки — например, использование необъявленных переменных.",
+    "category": "JS Patterns"
   },
   {
-    "id": 2,
-    "question": "What is the difference between <div> and <span>?",
-    "answer": "div is a block-level element (takes full width, starts on new line). span is an inline element (only takes as much width as needed, flows within text).",
-    "category": "HTML"
+    "question": "Почему для sm2Data используется `Object.create(null)` вместо обычного `{}`?",
+    "answer": "Обычный `{}` наследует от Object.prototype и содержит встроенные свойства: `toString`, `constructor`, `hasOwnProperty`. Если ID карточки случайно совпадёт с одним из этих имён, вместо `undefined` вернётся функция.\n\n`Object.create(null)` создаёт по-настоящему пустой объект без цепочки прототипов — безопасный словарь для произвольных строковых ключей.",
+    "category": "JS Patterns"
   },
   {
-    "id": 3,
-    "question": "What is DOCTYPE and why is it needed?",
-    "answer": "A declaration at the top of an HTML document that tells the browser which version of HTML to use. <!DOCTYPE html> triggers standards mode and ensures consistent rendering.",
-    "category": "HTML"
+    "question": "Что делает этот код и зачем?\n\n```js\nconst $ = (id) => document.getElementById(id);\n```",
+    "answer": "Это короткий алиас для `document.getElementById`. Вместо длинного `document.getElementById('start-btn')` приложение пишет `$('start-btn')`.\n\nРаспространённый паттерн в vanilla JS для сокращения boilerplate-кода. `const` гарантирует, что переменную нельзя случайно перезаписать.\n\nВажно: это НЕ jQuery — просто локальная переменная с именем `$`.",
+    "category": "JS Patterns"
   },
   {
-    "id": 4,
-    "question": "What are data-* attributes in HTML?",
-    "answer": "Custom attributes for storing extra data on HTML elements. Accessed via element.dataset in JavaScript. Example: <div data-user-id=\"42\"> → element.dataset.userId === '42'.",
-    "category": "HTML"
+    "question": "Как работает алгоритм Fisher-Yates shuffle в приложении?\n\n```js\nfor (let i = arr.length - 1; i > 0; i--) {\n  const j = Math.floor(Math.random() * (i + 1));\n  [arr[i], arr[j]] = [arr[j], arr[i]];\n}\n```",
+    "answer": "Проходит массив с конца. Для каждой позиции `i` выбирает случайный индекс `j` от 0 до `i` включительно и меняет элементы местами.\n\nГарантирует равномерно случайную перестановку — каждый возможный порядок равновероятен.\n\nДеструктуризация `[arr[i], arr[j]] = [arr[j], arr[i]]` — чистый обмен без временной переменной. Сложность: O(n).",
+    "category": "JS Patterns"
   },
   {
-    "id": 5,
-    "question": "What is the CSS Box Model?",
-    "answer": "Every element is a box consisting of: content → padding → border → margin (from inside out). box-sizing: border-box makes width/height include padding and border.",
-    "category": "CSS"
+    "question": "Почему для генерации ID карточек используется DJB2 хеш текста вопроса, а не timestamp или random?\n\n```js\nfunction generateCardId(question) {\n  var hash = 5381;\n  for (var i = 0; i < question.length; i++) {\n    hash = ((hash << 5) + hash + question.charCodeAt(i)) & 0xffffffff;\n  }\n  return 'a' + (hash >>> 0).toString(36);\n}\n```",
+    "answer": "Хеш текста вопроса даёт стабильный ID — один и тот же вопрос всегда получает один и тот же ID. Это значит:\n- Повторный импорт того же JSON не создаст дубликаты\n- Прогресс SM-2 сохраняется при переимпорте\n\nTimestamp или random генерировали бы новый ID каждый раз, разрывая связь карточки с прогрессом.\n\n`<< 5` — умножение на 32. `& 0xffffffff` — 32-битный диапазон. `>>> 0` — беззнаковое число. `toString(36)` — компактная base-36 запись. Префикс `'a'` гарантирует валидный строковый ключ.",
+    "category": "JS Patterns"
   },
   {
-    "id": 6,
-    "question": "What is the difference between Flexbox and Grid?",
-    "answer": "Flexbox is one-dimensional (row OR column). Grid is two-dimensional (rows AND columns simultaneously). Use Flexbox for component layouts, Grid for page-level layouts.",
-    "category": "CSS"
+    "question": "Что такое `replaceChildren()` и почему он используется вместо `innerHTML = ''`?",
+    "answer": "`container.replaceChildren()` удаляет все дочерние узлы за один вызов. Предпочтительнее `innerHTML = ''` по двум причинам:\n\n1. Безопасность: `innerHTML` парсит HTML, что может привести к XSS при неосторожном использовании\n2. Производительность: `replaceChildren()` не вызывает HTML-парсер — напрямую работает с DOM-деревом\n\nВся функция renderFormattedText избегает innerHTML, используя `createElement` и `createTextNode` для безопасной сборки контента.",
+    "category": "JS Patterns"
   },
   {
-    "id": 7,
-    "question": "What is CSS specificity?",
-    "answer": "Algorithm that determines which CSS rule wins when multiple rules target the same element. Priority: inline styles (1000) > #id (100) > .class (10) > element (1). !important overrides all.",
-    "category": "CSS"
+    "question": "Что такое Service Worker и какую роль он играет в PrepDeck?",
+    "answer": "Service Worker — это скрипт, который работает в отдельном потоке от основной страницы. Действует как сетевой прокси — перехватывает каждый fetch-запрос приложения.\n\nВ PrepDeck файл sw.js:\n1. Кеширует все ресурсы (HTML, CSS, JS, JSON, иконки) при установке\n2. Отдаёт файлы из кеша в офлайне\n3. Обновляет кеш в фоне при наличии сети (stale-while-revalidate)\n\nБлагодаря этому PrepDeck полностью работает офлайн после первого визита. SW не имеет доступа к DOM — общается только через события.",
+    "category": "Service Worker"
   },
   {
-    "id": 8,
-    "question": "What is the difference between position: relative and position: absolute?",
-    "answer": "relative: element is offset from its normal position, still occupies original space. absolute: element is removed from flow and positioned relative to the nearest positioned ancestor.",
-    "category": "CSS"
+    "question": "Объясни жизненный цикл Service Worker: install → activate → fetch.",
+    "answer": "install: срабатывает при первой регистрации SW или при изменении sw.js. Используется для предзагрузки ресурсов в кеш. `skipWaiting()` активирует новый SW сразу, не дожидаясь закрытия вкладок.\n\nactivate: срабатывает после install, когда SW берёт управление. Используется для очистки старых кешей. `clients.claim()` заставляет SW управлять всеми открытыми вкладками немедленно.\n\nfetch: срабатывает при каждом сетевом запросе от управляемых страниц. SW решает — отдать из кеша, из сети или комбинировать.\n\nВажно: новая версия SW ждёт закрытия всех вкладок со старой версией — если не вызван `skipWaiting()`.",
+    "category": "Service Worker"
   },
   {
-    "id": 9,
-    "question": "What is BEM methodology?",
-    "answer": "Block Element Modifier — a CSS naming convention. Block: .card, Element: .card__title, Modifier: .card--highlighted. Helps organize styles and avoid naming conflicts.",
-    "category": "CSS"
+    "question": "Какую стратегию кеширования использует PrepDeck и как она работает?\n\n```js\nevent.respondWith(\n  caches.match(event.request).then((cached) => {\n    const networkFetch = fetch(event.request)\n      .then((response) => {\n        if (response.ok) {\n          const clone = response.clone();\n          caches.open(CACHE_NAME).then((cache) =>\n            cache.put(event.request, clone));\n        }\n        return response;\n      })\n      .catch(() => cached);\n    return cached || networkFetch;\n  })\n);\n```",
+    "answer": "Stale-while-revalidate (устаревшее-пока-обновляется):\n\n1. Сначала проверяет кеш (`caches.match`)\n2. Одновременно делает запрос в сеть\n3. Если в кеше есть → сразу возвращает (быстро!)\n4. Когда приходит ответ из сети → обновляет кеш на следующий раз\n5. Если кеш пуст → ждёт ответа сети\n6. Если сеть недоступна → отдаёт из кеша\n\nЛучшее из двух миров: мгновенная загрузка из кеша + свежий контент при следующем визите. Response клонируется, потому что тело ответа можно прочитать только один раз.",
+    "category": "Service Worker"
   },
   {
-    "id": 10,
-    "question": "What is a closure in JavaScript?",
-    "answer": "A function that retains access to variables from its outer (lexical) scope even after the outer function has returned. Used for data privacy, callbacks, and factory functions.",
-    "category": "JavaScript"
+    "question": "Зачем Service Worker использует версионирование кеша (`prepdeck-v7`) и удаляет старые кеши при activate?",
+    "answer": "Когда файлы приложения меняются, старый кеш всё ещё хранит устаревшие версии. Смена имени версии (v6 → v7) создаёт новый кеш. Обработчик activate удаляет старые:\n\n```js\ncaches.keys().then((keys) =>\n  Promise.all(\n    keys.filter((k) => k !== CACHE_NAME)\n        .map((k) => caches.delete(k))\n  )\n);\n```\n\nБез этого старые кеши накапливаются и тратят хранилище. Браузер обнаруживает обновление SW при изменении хотя бы одного байта в sw.js — поэтому смена строки версии запускает полный цикл install → activate.",
+    "category": "Service Worker"
   },
   {
-    "id": 11,
-    "question": "What is the difference between let, const, and var?",
-    "answer": "var: function-scoped, hoisted, can be redeclared. let: block-scoped, not hoisted (TDZ), cannot be redeclared. const: like let, but cannot be reassigned (object properties can still change).",
-    "category": "JavaScript"
+    "question": "Что такое Content Security Policy (CSP) и как она настроена в PrepDeck?\n\n```html\n<meta http-equiv=\"Content-Security-Policy\"\n  content=\"default-src 'self'; script-src 'self';\n  style-src 'self'; img-src 'self' data:;\">\n```",
+    "answer": "CSP — уровень безопасности, который указывает браузеру, каким источникам контента можно доверять. Предотвращает XSS-атаки, блокируя неавторизованные скрипты, стили и ресурсы.\n\nПолитика PrepDeck:\n- `default-src 'self'` — загружать ресурсы только с того же домена\n- `script-src 'self'` — запускать скрипты только со своего домена (блокирует inline-скрипты и eval)\n- `style-src 'self'` — загружать стили только со своего домена\n- `img-src 'self' data:` — картинки с домена + data: URI\n\nЕсли злоумышленник внедрит `<script src=\"evil.com/hack.js\">`, браузер заблокирует загрузку.",
+    "category": "Security"
   },
   {
-    "id": 12,
-    "question": "What is a Promise in JavaScript?",
-    "answer": "An object representing the eventual completion or failure of an async operation. States: pending → fulfilled or rejected. Chained with .then()/.catch() or used with async/await.",
-    "category": "JavaScript"
+    "question": "Как PrepDeck защищается от XSS (Cross-Site Scripting) при рендере контента карточек?",
+    "answer": "Приложение НИКОГДА не использует `innerHTML` для рендера пользовательского текста. Вместо этого `renderFormattedText()` строит DOM-узлы вручную:\n\n- Обычный текст → `document.createTextNode(text)` — браузер трактует как текст, не как HTML\n- Инлайн-код → `codeEl.textContent = text` — textContent автоматически экранирует HTML\n- Блоки кода → тот же подход с элементами `<pre>` и `<code>`\n\nДаже если карточка содержит `<script>alert('XSS')</script>`, это отрендерится как видимый текст, а не исполняемый код. Это защита в глубину совместно с CSP.",
+    "category": "Security"
   },
   {
-    "id": 13,
-    "question": "What is the Event Loop?",
-    "answer": "Mechanism that handles async code in JS. Call stack executes sync code → async callbacks go to Web APIs → task/microtask queues → event loop pushes them to call stack when it's empty.",
-    "category": "JavaScript"
+    "question": "Почему приложение так строго валидирует импортированные JSON-файлы?\n\n```js\nif (file.size > MAX_FILE_SIZE) { ... }\nif (data.questions.length > MAX_CARDS) { ... }\nif (q.question.length > MAX_STRING_LENGTH) { ... }\n```",
+    "answer": "Загруженные пользователем файлы — это граница недоверенного ввода. Без валидации:\n\n- Огромный файл может заморозить браузер (исчерпание памяти)\n- Тысячи карточек могут исчерпать квоту localStorage (~5-10 МБ)\n- Сверхдлинные строки могут сломать рендер или сделать интерфейс непригодным\n- Нестроковые значения вызовут runtime-ошибки по всему приложению\n\nЛимиты: 5 МБ файл, максимум 5000 карточек, 5000 символов на поле. Также валидируются типы (`typeof q.question === 'string'`), некорректные записи молча отфильтровываются через `.filter(validateQuestion)`.",
+    "category": "Security"
   },
   {
-    "id": 14,
-    "question": "What is the difference between == and ===?",
-    "answer": "== (loose equality): compares values with type coercion (\"5\" == 5 is true). === (strict equality): compares value AND type without coercion (\"5\" === 5 is false). Always prefer ===.",
-    "category": "JavaScript"
+    "question": "Что такое PWA (Progressive Web App) и что делает PrepDeck прогрессивным веб-приложением?",
+    "answer": "PWA — это веб-приложение, которое ведёт себя как нативное. PrepDeck соответствует трём обязательным требованиям:\n\n1. HTTPS (или localhost) — обязателен для Service Workers\n2. Service Worker (sw.js) — обеспечивает офлайн-поддержку и кеширование\n3. Web App Manifest (manifest.json) — определяет имя, иконки, цвет темы, режим отображения\n\nПреимущества: можно установить на домашний экран, работает офлайн, не нужен магазин приложений. `display: standalone` в манифесте убирает адресную строку браузера, делая приложение похожим на нативное.",
+    "category": "PWA"
   },
   {
-    "id": 15,
-    "question": "What is hoisting in JavaScript?",
-    "answer": "Declarations (var, function) are moved to the top of their scope during compilation. var is hoisted as undefined. Function declarations are fully hoisted. let/const have a Temporal Dead Zone.",
-    "category": "JavaScript"
+    "question": "Почему PrepDeck не работает через протокол `file://` и зачем нужен HTTP-сервер?",
+    "answer": "Две браузерные политики безопасности блокируют `file://`:\n\n1. Service Workers регистрируются только в безопасных контекстах: HTTPS или `localhost` (http). Протокол `file://` не считается безопасным.\n\n2. `fetch()` API не может загружать локальные файлы через `file://` из-за ограничений CORS — вызов `fetch('questions.json')` завершится ошибкой.\n\n`python3 -m http.server 8000` создаёт минимальный HTTP-сервер, который раздаёт файлы из текущей директории по адресу `http://localhost:8000`, удовлетворяя оба требования.",
+    "category": "PWA"
   },
   {
-    "id": 16,
-    "question": "What does 'this' refer to in JavaScript?",
-    "answer": "Depends on how the function is called: method call → the object; standalone → window/undefined; arrow function → inherits from enclosing scope; new → the new instance; bind/call/apply → explicitly set.",
-    "category": "JavaScript"
+    "question": "Как PrepDeck обрабатывает лимит квоты localStorage?\n\n```js\nfunction safeSetItem(key, value) {\n  try {\n    localStorage.setItem(key, value);\n  } catch (e) {\n    alert('Не удалось сохранить данные. Хранилище переполнено.');\n  }\n}\n```",
+    "answer": "localStorage имеет лимит ~5-10 МБ (зависит от браузера). При превышении `setItem` выбрасывает `QuotaExceededError`. Без try/catch это привело бы к тихому падению приложения.\n\n`safeSetItem` оборачивает каждую запись в try/catch и предупреждает пользователя. Все записи в хранилище проходят через эту функцию: данные SM-2, карточки, категории, дни занятий.\n\nЭто паттерн защитного программирования (defensive programming) — приложение корректно деградирует вместо того, чтобы падать. Пользователь может экспортировать данные и очистить хранилище для восстановления.",
+    "category": "Architecture"
   },
   {
-    "id": 17,
-    "question": "What is a REST API?",
-    "answer": "Architectural style for APIs using HTTP methods: GET (read), POST (create), PUT (update), DELETE (remove). Stateless, resource-based URLs (/users/123), returns JSON. Standard for web services.",
-    "category": "Web"
-  },
-  {
-    "id": 18,
-    "question": "What is CORS?",
-    "answer": "Cross-Origin Resource Sharing — a browser security mechanism that blocks requests to a different domain unless the server sends Access-Control-Allow-Origin headers. Protects users from malicious sites.",
-    "category": "Web"
-  },
-  {
-    "id": 19,
-    "question": "What is the difference between localStorage and sessionStorage?",
-    "answer": "Both store key-value pairs in the browser. localStorage persists until manually cleared (survives tab/browser close). sessionStorage is cleared when the tab is closed. Both limited to ~5-10 MB.",
-    "category": "Web"
-  },
-  {
-    "id": 20,
-    "question": "What is the difference between cookies and localStorage?",
-    "answer": "Cookies: sent with every HTTP request, 4KB limit, can set expiration, accessible by server. localStorage: client-side only, ~5-10MB, no expiration, not sent to server. Use cookies for auth, localStorage for app data.",
-    "category": "Web"
+    "question": "Какой формат у файла бэкапа и как приложение отличает бэкап от обычных карточек?\n\n```js\nif (data.version && data.questions && data.progress) {\n  await handleImportBackup(data);\n}\n```",
+    "answer": "Бэкап — JSON-объект с определённой структурой:\n```json\n{\n  \"version\": 1,\n  \"exportDate\": \"2025-01-15T...\",\n  \"questions\": [...],\n  \"progress\": {\n    \"sm2Data\": {...},\n    \"selectedCategories\": [...],\n    \"studyDays\": [...]\n  }\n}\n```\n\nОбычные карточки — просто массив: `[{question, answer, category}, ...]`\n\nПриложение проверяет наличие полей `version`, `questions` И `progress`. Если все три есть → это бэкап (полное восстановление). Если это массив → импорт карточек (предложит заменить или добавить). Это паттерн утиной типизации (duck typing) — формат определяется по форме данных, а не по расширению файла.",
+    "category": "Architecture"
   }
 ]
