@@ -13,6 +13,7 @@
   const STORAGE_CATEGORIES = 'prepdeck_categories';
   const STORAGE_STUDY_DAYS = 'prepdeck_study_days';
   const STORAGE_THEME = 'prepdeck_theme';
+  const STORAGE_FONT_SIZE = 'prepdeck_fontsize';
 
   // ---- Validation Limits ----
   const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -56,6 +57,7 @@
     fileInput: $('file-input'),
     exportBtn: $('export-btn'),
     themeBtn: $('theme-btn'),
+    fontsizeBtn: $('fontsize-btn'),
     resetBtn: $('reset-btn'),
     categoryChips: $('category-chips'),
     categoryHeader: $('category-header'),
@@ -235,6 +237,35 @@
     var next = current === 'dark' ? 'light' : 'dark';
     applyTheme(next);
     safeSetItem(STORAGE_THEME, next);
+  }
+
+  // ---- Font Size ----
+
+  var FONT_SIZES = ['small', 'medium', 'large'];
+  var FONT_LABELS = { small: 'Мелкий', medium: 'Средний', large: 'Крупный' };
+
+  function loadFontSize() {
+    var saved = localStorage.getItem(STORAGE_FONT_SIZE);
+    applyFontSize(saved && FONT_LABELS[saved] ? saved : 'medium');
+  }
+
+  function applyFontSize(size) {
+    if (size === 'medium') {
+      document.documentElement.removeAttribute('data-fontsize');
+    } else {
+      document.documentElement.setAttribute('data-fontsize', size);
+    }
+    if (domElements.fontsizeBtn) {
+      domElements.fontsizeBtn.textContent = '\uD83D\uDD24 Шрифт: ' + FONT_LABELS[size];
+    }
+  }
+
+  function cycleFontSize() {
+    var current = document.documentElement.getAttribute('data-fontsize') || 'medium';
+    var idx = FONT_SIZES.indexOf(current);
+    var next = FONT_SIZES[(idx + 1) % FONT_SIZES.length];
+    applyFontSize(next);
+    safeSetItem(STORAGE_FONT_SIZE, next);
   }
 
   // ---- SM-2 Algorithm ----
@@ -934,6 +965,10 @@
       toggleTheme();
     });
 
+    domElements.fontsizeBtn.addEventListener('click', function () {
+      cycleFontSize();
+    });
+
     domElements.resetBtn.addEventListener('click', async function () {
       closeDrawer();
       var confirmed = await showDialog(
@@ -985,6 +1020,7 @@
   /** Initialize app: load data, render UI, bind events. */
   async function init() {
     loadTheme();
+    loadFontSize();
     await loadQuestions();
     extractCategories();
     loadCategoryFilter();

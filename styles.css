@@ -49,6 +49,11 @@
   /* Sizing */
   --radius: 12px;
   --radius-lg: 16px;
+
+  /* Font sizes (medium by default) */
+  --font-q: 18px;
+  --font-a: 15px;
+  --font-code: 13px;
 }
 
 /* ---- Dark Theme ---- */
@@ -88,6 +93,20 @@
 
 [data-theme="dark"] .btn-unsure {
   color: #1a1a1a;
+}
+
+/* ---- Font Size Variants ---- */
+
+[data-fontsize="small"] {
+  --font-q: 15px;
+  --font-a: 13px;
+  --font-code: 12px;
+}
+
+[data-fontsize="large"] {
+  --font-q: 21px;
+  --font-a: 18px;
+  --font-code: 15px;
 }
 
 html, body {
@@ -464,15 +483,15 @@ body {
 
 .card-back .card-content {
   text-align: left;
-  font-size: 15px;
+  font-size: var(--font-a);
 }
 
 .card-back .code-block {
-  font-size: 13px;
+  font-size: var(--font-code);
 }
 
 .card-back .code-inline {
-  font-size: 13px;
+  font-size: var(--font-code);
 }
 
 .card-label {
@@ -488,7 +507,10 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  font-size: 18px;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  font-size: var(--font-q);
   line-height: 1.6;
   text-align: center;
   word-break: break-word;
@@ -564,8 +586,19 @@ body {
 }
 
 .actions .btn {
-  padding: 12px 8px;
+  padding: 12px 6px;
   font-size: 14px;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 360px) {
+  .actions .btn {
+    font-size: 12px;
+    padding: 12px 4px;
+  }
 }
 
 .actions.visible {
