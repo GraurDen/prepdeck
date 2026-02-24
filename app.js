@@ -523,6 +523,8 @@
    */
   function renderFormattedText(container, text) {
     container.replaceChildren();
+    // Normalize double-escaped newlines from AI-generated cards (\\n → \n)
+    text = text.replace(/\\n/g, '\n');
     // Split by ``` for code blocks (odd segments = code)
     var blockParts = text.split('```');
     for (var b = 0; b < blockParts.length; b++) {
@@ -549,10 +551,21 @@
             inlineCode.textContent = inlineParts[i];
             container.appendChild(inlineCode);
           } else if (inlineParts[i]) {
-            var lines = inlineParts[i].split('\n');
-            for (var l = 0; l < lines.length; l++) {
-              if (l > 0) container.appendChild(document.createElement('br'));
-              if (lines[l]) container.appendChild(document.createTextNode(lines[l]));
+            // Split by ** for bold text (odd segments = bold)
+            var boldParts = inlineParts[i].split('**');
+            for (var bp = 0; bp < boldParts.length; bp++) {
+              if (bp % 2 === 1) {
+                var strong = document.createElement('strong');
+                strong.className = 'text-bold';
+                strong.textContent = boldParts[bp];
+                container.appendChild(strong);
+              } else if (boldParts[bp]) {
+                var lines = boldParts[bp].split('\n');
+                for (var l = 0; l < lines.length; l++) {
+                  if (l > 0) container.appendChild(document.createElement('br'));
+                  if (lines[l]) container.appendChild(document.createTextNode(lines[l]));
+                }
+              }
             }
           }
         }
@@ -573,6 +586,8 @@
 
     domElements.flashcard.classList.remove('flipped');
     domElements.cardActions.classList.remove('visible');
+    domElements.questionText.scrollTop = 0;
+    domElements.answerText.scrollTop = 0;
 
     const totalInSession = sessionDeck.length;
     domElements.cardCounter.textContent = (currentIndex + 1) + ' / ' + totalInSession;

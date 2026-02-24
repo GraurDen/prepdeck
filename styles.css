@@ -54,10 +54,10 @@
 /* ---- Dark Theme ---- */
 
 [data-theme="dark"] {
-  --primary: #4A5899;
-  --primary-dark: #3D4A7A;
-  --primary-light: #5C6BC0;
-  --on-primary: #E0E0E0;
+  --primary: #7986CB;
+  --primary-dark: #5C6BC0;
+  --primary-light: #9FA8DA;
+  --on-primary: #FFFFFF;
 
   --success: #4DB6AC;
   --success-dark: #26A69A;
@@ -71,19 +71,23 @@
 
   --surface: #1E1E1E;
   --background: #121212;
-  --on-surface: #E0E0E0;
-  --on-surface-dim: #9E9E9E;
-  --card-bg: #252526;
-  --divider: #333333;
+  --on-surface: #ECECEC;
+  --on-surface-dim: #AAAAAA;
+  --card-bg: #2A2A2A;
+  --divider: #3A3A3A;
 
-  --code-bg: rgba(255, 255, 255, 0.08);
-  --chip-active-bg: #2a2d4a;
+  --code-bg: rgba(255, 255, 255, 0.1);
+  --chip-active-bg: #2d3260;
   --disabled-bg: #555555;
 }
 
 [data-theme="dark"] .app-bar,
 [data-theme="dark"] .drawer-header {
   background: #1E1E1E;
+}
+
+[data-theme="dark"] .btn-unsure {
+  color: #1a1a1a;
 }
 
 html, body {
@@ -418,9 +422,8 @@ body {
 
 .card {
   width: 100%;
-  max-width: 500px;
-  height: calc(100vh - 56px - 4px - 60px - 32px);
-  height: calc(100dvh - 56px - 4px - 60px - 32px);
+  max-width: 600px;
+  height: 100%;
   cursor: pointer;
 }
 
@@ -459,6 +462,19 @@ body {
   background: var(--success-bg);
 }
 
+.card-back .card-content {
+  text-align: left;
+  font-size: 15px;
+}
+
+.card-back .code-block {
+  font-size: 13px;
+}
+
+.card-back .code-inline {
+  font-size: 13px;
+}
+
 .card-label {
   font-size: 12px;
   font-weight: 600;
@@ -495,6 +511,11 @@ body {
 
 .card-content::-webkit-scrollbar-button {
   display: none;
+}
+
+.text-bold {
+  font-weight: 600;
+  color: var(--on-surface);
 }
 
 .code-inline {
@@ -681,7 +702,7 @@ body {
 
 .chip-active {
   background: var(--chip-active-bg);
-  color: var(--primary-dark);
+  color: var(--primary-light);
   border-color: var(--primary-light);
 }
 
