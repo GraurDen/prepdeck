@@ -229,6 +229,9 @@
     if (domElements.themeBtn) {
       domElements.themeBtn.textContent = theme === 'dark' ? '\u2600\uFE0F Светлая тема' : '\uD83C\uDF19 Тёмная тема';
     }
+    document.querySelectorAll('.card-theme-btn').forEach(function (btn) {
+      btn.textContent = theme === 'dark' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+    });
   }
 
   /** Toggle between light and dark themes. */
@@ -1003,8 +1006,20 @@
     });
 
     domElements.fontsizeBtns.forEach(function (btn) {
-      btn.addEventListener('click', function () {
+      btn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      btn.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
         setFontSize(btn.getAttribute('data-size'));
+      });
+    });
+
+    document.querySelectorAll('.card-theme-btn').forEach(function (btn) {
+      btn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+      btn.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+      btn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        toggleTheme();
       });
     });
 
