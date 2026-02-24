@@ -43,6 +43,7 @@
 
   /* Components */
   --code-bg: rgba(0, 0, 0, 0.06);
+  --code-comment: #6a737d;
   --chip-active-bg: #E8EAF6;
   --disabled-bg: #B0BEC5;
 
@@ -106,6 +107,7 @@
   --divider: #3A3A3A;
 
   --code-bg: rgba(255, 255, 255, 0.1);
+  --code-comment: #8b949e;
   --chip-active-bg: #2d3260;
   --disabled-bg: #555555;
 
@@ -525,13 +527,6 @@ body {
   font-size: var(--font-a);
 }
 
-.card-back .code-block {
-  font-size: var(--font-code);
-}
-
-.card-back .code-inline {
-  font-size: var(--font-code);
-}
 
 .card-label {
   font-size: 12px;
@@ -646,7 +641,7 @@ body {
   background: var(--code-bg);
   padding: 2px 6px;
   border-radius: 4px;
-  font-size: 0.9em;
+  font-size: var(--font-code);
 }
 
 .code-block {
@@ -656,7 +651,7 @@ body {
   background: var(--code-bg);
   padding: 12px;
   border-radius: 8px;
-  font-size: 0.85em;
+  font-size: var(--font-code);
   overflow-x: auto;
   white-space: pre-wrap;
   word-break: break-word;
@@ -665,6 +660,11 @@ body {
 
 .code-block code {
   font-family: inherit;
+}
+
+.code-comment {
+  color: var(--code-comment);
+  font-style: italic;
 }
 
 .card-hint {

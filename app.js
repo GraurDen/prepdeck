@@ -546,6 +546,49 @@
     showCard();
   }
 
+  function renderCodeWithComments(parent, code) {
+    var lines = code.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (i > 0) parent.appendChild(document.createTextNode('\n'));
+      var line = lines[i];
+      // Full-line // comment
+      if (/^\s*\/\//.test(line)) {
+        var s = document.createElement('span');
+        s.className = 'code-comment';
+        s.textContent = line;
+        parent.appendChild(s);
+        continue;
+      }
+      // Full-line # comment (bash/python)
+      if (/^\s*#\s/.test(line)) {
+        var s = document.createElement('span');
+        s.className = 'code-comment';
+        s.textContent = line;
+        parent.appendChild(s);
+        continue;
+      }
+      // HTML comment
+      if (/^\s*<!--/.test(line)) {
+        var s = document.createElement('span');
+        s.className = 'code-comment';
+        s.textContent = line;
+        parent.appendChild(s);
+        continue;
+      }
+      // Inline // comment (space before // to avoid matching URLs)
+      var m = line.match(/^(.*\s)(\/\/.*)$/);
+      if (m && !/:\s*$/.test(m[1])) {
+        parent.appendChild(document.createTextNode(m[1]));
+        var s = document.createElement('span');
+        s.className = 'code-comment';
+        s.textContent = m[2];
+        parent.appendChild(s);
+        continue;
+      }
+      parent.appendChild(document.createTextNode(line));
+    }
+  }
+
   /**
    * Render text with markdown-style code formatting into a container.
    * Uses DOM methods (no innerHTML) to preserve XSS safety.
@@ -568,7 +611,7 @@
         var pre = document.createElement('pre');
         pre.className = 'code-block';
         var codeEl = document.createElement('code');
-        codeEl.textContent = code;
+        renderCodeWithComments(codeEl, code);
         pre.appendChild(codeEl);
         container.appendChild(pre);
       } else {
