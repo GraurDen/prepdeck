@@ -57,7 +57,7 @@
     fileInput: $('file-input'),
     exportBtn: $('export-btn'),
     themeBtn: $('theme-btn'),
-    fontsizeBtn: $('fontsize-btn'),
+    fontsizeBtns: document.querySelectorAll('.fontsize-btn'),
     resetBtn: $('reset-btn'),
     categoryChips: $('category-chips'),
     categoryHeader: $('category-header'),
@@ -241,7 +241,6 @@
 
   // ---- Font Size ----
 
-  var FONT_SIZES = ['small', 'medium', 'large'];
   var FONT_LABELS = { small: 'Мелкий', medium: 'Средний', large: 'Крупный' };
 
   function loadFontSize() {
@@ -255,17 +254,14 @@
     } else {
       document.documentElement.setAttribute('data-fontsize', size);
     }
-    if (domElements.fontsizeBtn) {
-      domElements.fontsizeBtn.textContent = '\uD83D\uDD24 Шрифт: ' + FONT_LABELS[size];
-    }
+    domElements.fontsizeBtns.forEach(function (btn) {
+      btn.classList.toggle('active', btn.getAttribute('data-size') === size);
+    });
   }
 
-  function cycleFontSize() {
-    var current = document.documentElement.getAttribute('data-fontsize') || 'medium';
-    var idx = FONT_SIZES.indexOf(current);
-    var next = FONT_SIZES[(idx + 1) % FONT_SIZES.length];
-    applyFontSize(next);
-    safeSetItem(STORAGE_FONT_SIZE, next);
+  function setFontSize(size) {
+    applyFontSize(size);
+    safeSetItem(STORAGE_FONT_SIZE, size);
   }
 
   // ---- SM-2 Algorithm ----
@@ -604,6 +600,47 @@
     }
   }
 
+  /**
+   * Render answer with collapsible details.
+   * Shows first paragraph as summary, rest behind "Подробнее" toggle.
+   */
+  function renderAnswer(container, text) {
+    container.replaceChildren();
+    var normalized = text.replace(/\\n/g, '\n');
+    var splitIdx = normalized.indexOf('\n\n');
+
+    if (splitIdx === -1) {
+      renderFormattedText(container, text);
+      return;
+    }
+
+    var summaryText = normalized.substring(0, splitIdx);
+    var detailsText = normalized.substring(splitIdx + 2);
+
+    var summary = document.createElement('div');
+    summary.className = 'answer-summary';
+    renderFormattedText(summary, summaryText);
+    container.appendChild(summary);
+
+    var toggle = document.createElement('button');
+    toggle.className = 'answer-toggle';
+    toggle.textContent = 'Подробнее \u25BE';
+    function stopProp(e) { e.stopPropagation(); }
+    toggle.addEventListener('pointerdown', stopProp);
+    toggle.addEventListener('pointerup', stopProp);
+    toggle.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var expanded = details.classList.toggle('expanded');
+      toggle.textContent = expanded ? 'Свернуть \u25B4' : 'Подробнее \u25BE';
+    });
+    container.appendChild(toggle);
+
+    var details = document.createElement('div');
+    details.className = 'answer-details';
+    renderFormattedText(details, detailsText);
+    container.appendChild(details);
+  }
+
   /** Display the current card (or show results if deck is finished). */
   function showCard() {
     if (currentIndex >= sessionDeck.length) {
@@ -613,7 +650,7 @@
 
     const card = sessionDeck[currentIndex];
     renderFormattedText(domElements.questionText, card.question);
-    renderFormattedText(domElements.answerText, card.answer);
+    renderAnswer(domElements.answerText, card.answer);
 
     domElements.flashcard.classList.remove('flipped');
     domElements.cardActions.classList.remove('visible');
@@ -965,8 +1002,10 @@
       toggleTheme();
     });
 
-    domElements.fontsizeBtn.addEventListener('click', function () {
-      cycleFontSize();
+    domElements.fontsizeBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        setFontSize(btn.getAttribute('data-size'));
+      });
     });
 
     domElements.resetBtn.addEventListener('click', async function () {

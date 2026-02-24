@@ -573,6 +573,42 @@ body {
   margin-top: 16px;
 }
 
+/* ---- Answer Collapse ---- */
+
+.answer-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin: 12px 0 4px;
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.answer-toggle::before,
+.answer-toggle::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--on-surface-dim);
+  opacity: 0.4;
+}
+
+.answer-details {
+  display: none;
+}
+
+.answer-details.expanded {
+  display: block;
+}
+
 /* ---- Card Actions ---- */
 
 .actions {
@@ -828,6 +864,51 @@ body {
 
 .drawer-item-danger {
   color: var(--danger);
+}
+
+/* ---- Font Size Buttons ---- */
+
+.fontsize-row {
+  gap: 10px;
+}
+
+.fontsize-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--divider);
+  background: none;
+  color: var(--on-surface);
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.fontsize-btn[data-size="small"] {
+  font-size: 12px;
+}
+
+.fontsize-btn[data-size="medium"] {
+  font-size: 15px;
+}
+
+.fontsize-btn[data-size="large"] {
+  font-size: 18px;
+}
+
+.fontsize-btn.active {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: var(--primary);
+}
+
+.fontsize-btn:active {
+  transform: scale(0.92);
 }
 
 /* ---- Empty State ---- */
