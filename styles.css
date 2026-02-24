@@ -43,7 +43,7 @@
 
   /* Components */
   --code-bg: rgba(0, 0, 0, 0.06);
-  --code-comment: #6a737d;
+  --code-comment: #9ca5ad;
   --chip-active-bg: #E8EAF6;
   --disabled-bg: #B0BEC5;
 
@@ -107,7 +107,7 @@
   --divider: #3A3A3A;
 
   --code-bg: rgba(255, 255, 255, 0.1);
-  --code-comment: #8b949e;
+  --code-comment: #6b737a;
   --chip-active-bg: #2d3260;
   --disabled-bg: #555555;
 
@@ -550,6 +550,10 @@ body {
   gap: 3px;
 }
 
+.fontsize-btn + .fontsize-btn {
+  margin-left: 6px;
+}
+
 .toolbar-btn {
   width: 26px;
   height: 26px;
@@ -573,28 +577,37 @@ body {
   transform: scale(0.9);
 }
 
+.toolbar-btn.fontsize-btn {
+  border: none;
+}
+
 .toolbar-btn.fontsize-btn[data-size="small"] {
+  width: 26px;
+  height: 26px;
   font-size: 10px;
 }
 
 .toolbar-btn.fontsize-btn[data-size="medium"] {
+  width: 30px;
+  height: 30px;
   font-size: 13px;
 }
 
 .toolbar-btn.fontsize-btn[data-size="large"] {
+  width: 34px;
+  height: 34px;
   font-size: 16px;
 }
 
 .toolbar-btn.fontsize-btn.active {
   background: var(--on-primary-active);
   color: var(--on-primary);
-  border-color: var(--on-primary-muted);
 }
 
 .card-theme-btn {
   font-size: 14px;
   border: none;
-  margin-left: 2px;
+  margin-left: 8px;
 }
 
 .card-content {
@@ -606,7 +619,7 @@ body {
   touch-action: pan-y;
   font-size: var(--font-q);
   line-height: 1.6;
-  text-align: center;
+  text-align: left;
   word-break: break-word;
   padding-right: 8px;
   scrollbar-width: thin;
@@ -653,8 +666,7 @@ body {
   border-radius: 8px;
   font-size: var(--font-code);
   overflow-x: auto;
-  white-space: pre-wrap;
-  word-break: break-word;
+  white-space: pre;
   margin: 8px 0;
 }
 
@@ -664,7 +676,6 @@ body {
 
 .code-comment {
   color: var(--code-comment);
-  font-style: italic;
 }
 
 .card-hint {
@@ -738,21 +749,22 @@ body {
     padding: 6px 8px;
   }
 
-  .toolbar-btn {
-    width: 24px;
-    height: 24px;
-  }
-
   .toolbar-btn.fontsize-btn[data-size="small"] {
-    font-size: 9px;
+    width: 20px;
+    height: 20px;
+    font-size: 8px;
   }
 
   .toolbar-btn.fontsize-btn[data-size="medium"] {
-    font-size: 11px;
+    width: 24px;
+    height: 24px;
+    font-size: 10px;
   }
 
   .toolbar-btn.fontsize-btn[data-size="large"] {
-    font-size: 14px;
+    width: 28px;
+    height: 28px;
+    font-size: 13px;
   }
 
   .card-theme-btn {
@@ -783,7 +795,7 @@ body {
   }
 
   .card-toolbar {
-    gap: 2px;
+    gap: 4px;
   }
 
   .toolbar-btn {
