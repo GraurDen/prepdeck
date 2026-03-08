@@ -82,6 +82,7 @@
     dialogActions: $('dialog-actions'),
     studyDaysCount: $('study-days-count'),
     allDoneInfo: $('all-done-info'),
+    copyAnswerBtn: $('copy-answer-btn'),
     ssKnew: $('ss-knew'),
     ssUnsure: $('ss-unsure'),
     ssForgot: $('ss-forgot'),
@@ -1080,6 +1081,25 @@
         updateHomeStats();
         updateStudyDaysDisplay();
       }
+    });
+
+    // Copy answer button
+    domElements.copyAnswerBtn.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+    domElements.copyAnswerBtn.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+    domElements.copyAnswerBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var card = sessionDeck[currentIndex];
+      if (!card) return;
+      var text = card.answer.replace(/\\n/g, '\n');
+      navigator.clipboard.writeText(text).then(function () {
+        var svgMarkup = domElements.copyAnswerBtn.innerHTML;
+        domElements.copyAnswerBtn.classList.add('copied');
+        domElements.copyAnswerBtn.textContent = '\u2713';
+        setTimeout(function () {
+          domElements.copyAnswerBtn.classList.remove('copied');
+          domElements.copyAnswerBtn.innerHTML = svgMarkup;
+        }, 1500);
+      });
     });
 
     // Card screen

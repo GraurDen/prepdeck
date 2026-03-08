@@ -678,6 +678,34 @@ body {
   color: var(--code-comment);
 }
 
+/* ---- Copy Button ---- */
+
+.card-back-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.copy-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: var(--on-surface-dim);
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.copy-btn:active {
+  background: var(--hover-bg);
+}
+
+.copy-btn.copied {
+  color: var(--success);
+}
+
 .card-hint {
   font-size: 13px;
   color: var(--on-surface-dim);

@@ -104,7 +104,15 @@
             <div class="card-hint">Нажмите, чтобы увидеть ответ</div>
           </div>
           <div class="card-back">
-            <div class="card-label">Ответ</div>
+            <div class="card-back-header">
+              <div class="card-label">Ответ</div>
+              <button class="copy-btn" id="copy-answer-btn" title="Копировать ответ">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/>
+                  <path d="M10.5 5.5V3a1.5 1.5 0 0 0-1.5-1.5H3A1.5 1.5 0 0 0 1.5 3v6A1.5 1.5 0 0 0 3 10.5h2.5"/>
+                </svg>
+              </button>
+            </div>
             <div class="card-content" id="answer-text"></div>
           </div>
         </div>
